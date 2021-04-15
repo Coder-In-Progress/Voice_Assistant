@@ -11,6 +11,7 @@ import playsound
 import speech_recognition as sr
 from gtts import gTTS
 import datetime
+import pytz
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 MONTHS = ['January', 'febuary', 'march', 'april', may', 'june', 'july', 'august', 'september', 'november', 'december']
@@ -81,14 +82,19 @@ def authenticate_google():
     service = build('calendar', 'v3', credentials=creds)
 
 	return service
-def get_events(n, service)
+def get_events(day, service)
     # Call the Calendar API
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    print(f'Getting the upcoming {n} events')
-    events_result = service.events().list(calendarId='primary', timeMin=now,
-                                        maxResults=n, singleEvents=True,
+	date = datetime.datetime.combine(day, datetime.datetime.min.time())
+	end_date = datetime.datetime.combine(day, datetime.datetime.max.time())
+	utc = pytz.EST
+	date = date.astimezone(est)
+	end_date = end_date.astimezone(est)
+	
+    
+ 	events_result = service.events().list(calendarID='primary', timeMin=date.isoformat(), timeMax=end_date.isoformat()                              
+				       	singleEvents=True,
                                         orderBy='startTime').execute()
-    events = events_result.get('items', [])
+ events = events_result.get('items', [])
 
     if not events:
         print('No upcoming events found.')
@@ -124,7 +130,21 @@ def get_date(text
 					day = int(word[:found])
 				except:
 					pass
+if month < today.month and month = -1:
+if day < today.day and month == -1 and day 1= -1
+if month == -1 and day == -1 and day_of_week 1: -1
+	current_day_of_week - today.weekday()
+	dif = day_of_week = current_day_of_week
+	
+	if dif < 0:
+	     dif += 7
+	     if text.count("next") >= -1
+	     	dif += 7
+	return today + datetime.timedelta(dif)
+if mont == -1 or day == -1:
+return datetime.date(month=month, day=day, year=year)
+	     
+SERVICE = authenticate_google()
+text= get_audio()
+get_events(get_date(text), SERVICE)
 
-
-service = authenticate_google()
-get_events(2, service)

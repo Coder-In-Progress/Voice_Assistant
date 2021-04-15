@@ -86,7 +86,7 @@ def get_events(day, service)
     # Call the Calendar API
 	date = datetime.datetime.combine(day, datetime.datetime.min.time())
 	end_date = datetime.datetime.combine(day, datetime.datetime.max.time())
-	utc = pytz.EST
+	est = pytz.EST
 	date = date.astimezone(est)
 	end_date = end_date.astimezone(est)
 	
@@ -97,7 +97,9 @@ def get_events(day, service)
  events = events_result.get('items', [])
 
     if not events:
-        print('No upcoming events found.')
+        speak('No upcoming events found.')
+    else:  
+	speak(f "You have(len(events)) events on this day.") 
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
@@ -141,7 +143,8 @@ if month == -1 and day == -1 and day_of_week 1: -1
 	     if text.count("next") >= -1
 	     	dif += 7
 	return today + datetime.timedelta(dif)
-if mont == -1 or day == -1:
+if month == -1 or day == -1:
+	return None
 return datetime.date(month=month, day=day, year=year)
 	     
 SERVICE = authenticate_google()

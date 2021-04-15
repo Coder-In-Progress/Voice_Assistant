@@ -7,11 +7,8 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 import os
 import time
-import playsound
 import speech_recognition as sr
-from gtts import gTTS
-import datetime
-import pytz
+import pyttsx3
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 MONTHS = ['January', 'febuary', 'march', 'april', may', 'june', 'july', 'august', 'september', 'november', 'december']
@@ -100,12 +97,20 @@ def get_events(day, service)
         speak('No upcoming events found.')
     else:  
 	speak(f "You have(len(events)) events on this day.") 
+	
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
+	start_(time = str(sart.split("T")[1].split("-")[0])
+	if int(start_time.split(":")[0]) < 12:
+	       start_time = start_time + "am"
+	else:
+	       start_time = str(int(start_time.split(":")[0])-12)
+	       start_time = start_time + "pm"
+	
+	speak(event["summary"] + " at " + start_time)
 
-
-def get_date(text
+def get_date(text):
 	text=text.lower()
 	today = datetime.date.today()
 	
@@ -146,8 +151,19 @@ if month == -1 and day == -1 and day_of_week 1: -1
 if month == -1 or day == -1:
 	return None
 return datetime.date(month=month, day=day, year=year)
-	     
-SERVICE = authenticate_google()
-text= get_audio()
-get_events(get_date(text), SERVICE)
 
+	       
+
+SERVICE = authenticate_google()
+print("Start")
+text= get_audio()
+
+CALENDAR_STRS = ["what do i have", "do i have plans", "am i busy"]
+for phrase in CALENDAR_STRS:
+	if phrase in text.lower():
+	       date = get_date(text)
+	       if date:
+	       	get_events(get_date(text), SERVICE)
+	       else:
+	       	speak("Please Try Again, I do not understand")
+	       

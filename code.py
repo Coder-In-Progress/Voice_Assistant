@@ -1,14 +1,16 @@
 from __future__ import print_function
 import datetime
+import pickle
 import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
 import os
 import time
-import speech_recognition as sr
 import pyttsx3
+import speech_recognition as sr
+import pytz
+import subprocess
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 MONTHS = ['January', 'febuary', 'march', 'april', may', 'june', 'july', 'august', 'september', 'november', 'december']
@@ -16,10 +18,9 @@ DAYS = [monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sund
 DAY_ABRE = ["rd", "th", "st", "nd"]
 
 def speak(text):
-	tts = gTTS(text=text, lang="en")
-	filename = "recording.mp3"
-	tts.save(filename)
-	playsound.playsound(filename)
+    engine = pyttsx3.init()
+    engine.say(text)
+    engine.runAndWait()
 
 
 
@@ -34,7 +35,7 @@ def get_audio():
 				print(said)
 			except Esception as e:
 				print("Exception: " + str(e))
-	return said
+	return said.lower()
 
 
 speak ("Hello Jithesh")
@@ -105,13 +106,13 @@ def get_events(day, service)
 	if int(start_time.split(":")[0]) < 12:
 	       start_time = start_time + "am"
 	else:
-	       start_time = str(int(start_time.split(":")[0])-12)
+	       start_time = str(int(start_time.split(":")[0])-12) + start_time.split(":")[1]
 	       start_time = start_time + "pm"
 	
 	speak(event["summary"] + " at " + start_time)
 
 def get_date(text):
-	text=text.lower()
+	text=text
 	today = datetime.date.today()
 	
 	if text.count ("today") > 0:
@@ -152,18 +153,40 @@ if month == -1 or day == -1:
 	return None
 return datetime.date(month=month, day=day, year=year)
 
+def note(text):
+	date = datetime.datetime.now()
+	file_name = str(date).replace(":","-") + "-note.txt"
+	with open(file_name, "w") as f:
+	       f.write(text)
 	       
-
+	  
+	subprocess.Popen(["notepad.exe", file_name])
+		       
+WAKE = "Jbob"
 SERVICE = authenticate_google()
 print("Start")
-text= get_audio()
 
-CALENDAR_STRS = ["what do i have", "do i have plans", "am i busy"]
-for phrase in CALENDAR_STRS:
-	if phrase in text.lower():
-	       date = get_date(text)
-	       if date:
-	       	get_events(get_date(text), SERVICE)
-	       else:
-	       	speak("Please Try Again, I do not understand")
+while True:
+	print("Listening")       
+	text= get_audio()
+	
+	if text.count(WAKE) > 0:
+		speak ("Yes?")
+	        text = get_audio()
 	       
+	CALENDAR_STRS = ["what do i have", "do i have plans", "am i busy"]
+	for phrase in CALENDAR_STRS:
+		if phrase in text:
+		       date = get_date(text)
+		       if date:
+		       	get_events(get_date(text), SERVICE)
+		       else:
+		       	speak("Please Try Again, I do not understand")
+	       
+	NOTE_STRS = ["make a note", "write this down", "remember this"]
+	for phrase in NOTE_STRS:
+		if phrase in text:
+		       speak("What would you like me to write down?")
+		       note_text = get_audio()
+		       note(note)
+		       speak("I've made a note")

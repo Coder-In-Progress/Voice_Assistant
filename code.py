@@ -66,9 +66,9 @@ def get_events(day, service):
     # Call the Calendar API
     date = datetime.datetime.combine(day, datetime.datetime.min.time())
     end_date = datetime.datetime.combine(day, datetime.datetime.max.time())
-    utc = pytz.UTC
-    date = date.astimezone(utc)
-    end_date = end_date.astimezone(utc)
+    est = pytz.EST
+    date = date.astimezone(est)
+    end_date = end_date.astimezone(est)
 
     events_result = service.events().list(calendarId='primary', timeMin=date.isoformat(), timeMax=end_date.isoformat(),
                                         singleEvents=True,
@@ -121,12 +121,10 @@ def get_date(text):
                     except:
                         pass
 
-    # THE NEW PART STARTS HERE
-    if month < today.month and month != -1:  # if the month mentioned is before the current month set the year to the next
+    if month < today.month and month != -1:
         year = year+1
 
-    # This is slighlty different from the video but the correct version
-    if month == -1 and day != -1:  # if we didn't find a month, but we have a day
+if month == -1 and day != -1:
         if day < today.day:
             month = today.month + 1
         else:
@@ -144,7 +142,7 @@ def get_date(text):
 
         return today + datetime.timedelta(dif)
 
-    if day != -1:  # FIXED FROM VIDEO
+    if day != -1:
         return datetime.date(month=month, day=day, year=year)
 
 def note(text):
@@ -156,9 +154,8 @@ def note(text):
     subprocess.Popen(["notepad.exe", file_name])
 
 
-WAKE = "hey Jithesh"
+WAKE = "Zen"
 SERVICE = authenticate_google()
-print("Start")
 
 while True:
     print("Yes?")
